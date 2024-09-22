@@ -1,5 +1,5 @@
 # Ripple-Noise
-Python module for generating images using a unique kind of procedural noise.
+Python module for generating images using a unique kind of procedural noise I came up with.
 
 The name is "Ripple Noise" because the noise generation method is inspired by ripples in water.
 
