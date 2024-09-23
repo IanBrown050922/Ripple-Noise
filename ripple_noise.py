@@ -13,7 +13,6 @@ class Ripple_Noise:
     '''
     Constructor
 
-    name: name of noise image
     size: size of image
     density: density of noise pattern
     scale: scale of noise pattern
