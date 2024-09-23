@@ -4,7 +4,7 @@ from PIL import Image
 
 
 '''
-Class for generating noise texture
+Class for generating noise texture images
 '''
 class Ripple_Noise:
     IMG_EXT = '.png'
@@ -20,10 +20,9 @@ class Ripple_Noise:
     strength: strength of noise pattern
     smoothness: smoothness of noise pattern
     '''
-    def __init__(self, name: str, size: int, density: int, scale=0.1, strength=0.75, smoothness=2) -> None:
+    def __init__(self, size: int, density: int, scale=0.1, strength=0.75, smoothness=2) -> None:
         self.__validate_parameters(size, density, smoothness)
 
-        self.name = name
         self.size = size
         self.density = density
 
@@ -31,10 +30,6 @@ class Ripple_Noise:
         self.scale = scale * self.delta
         self.strength = strength * self.delta
         self.smoothness = smoothness
-
-        self.__init_image()
-        self.__seed_image()
-        self.__fill_image()
 
 
     '''
@@ -52,7 +47,7 @@ class Ripple_Noise:
 
 
     '''
-    Set up image object to hold noise pattern
+    Create image to hold noise pattern
     '''
     def __init_image(self) -> None:
         self.image = Image.new('RGB', (self.size, self.size))
@@ -60,7 +55,9 @@ class Ripple_Noise:
     
     
     '''
-    Designate "seeds" within image space, used as reference points for generating noise pattern
+    Designate seeds within image space
+
+    Seeds are the points from which "ripples" emanate
     '''
     def __seed_image(self) -> None:
         self.seeds = []
@@ -76,7 +73,7 @@ class Ripple_Noise:
 
 
     '''
-    Determines lightness of pixel from distance to seed
+    Determine lightness of pixel from distance to seed
     '''
     def __value_function(self, dist: int) -> int:
         value = 255 * math.cos(math.pi * dist / self.scale)
@@ -85,8 +82,9 @@ class Ripple_Noise:
     
 
     '''
-    Finds nearest seeds to pixel
-    Considers more seeds as "near" for higher smoothness values
+    Return nearest seeds to pixel
+    
+    Note: higher smoothness values cause more seeds to be considered per pixel.
     '''
     def __nearest_seeds(self, x: int, y: int) -> list:
         row = x // self.delta
@@ -103,7 +101,7 @@ class Ripple_Noise:
     
 
     '''
-    Sets lightness of pixel
+    Set lightness of single pixel
     '''
     def __set_pixel_value(self, x: int, y: int) -> None:
         value = 0 
@@ -118,7 +116,7 @@ class Ripple_Noise:
 
 
     '''
-    Draws noise pattern
+    Fill image with noise texture
     '''
     def __fill_image(self) -> None:
         for i in range(self.size):
@@ -127,7 +125,10 @@ class Ripple_Noise:
 
 
     '''
-    Saves noise image
+    Generate and save noise image
     '''
-    def save_image(self) -> None:
-        self.image.save(self.name + Ripple_Noise.IMG_EXT)
+    def generate_image(self, name: str) -> None:
+        self.__init_image()
+        self.__seed_image()
+        self.__fill_image()
+        self.image.save(name + Ripple_Noise.IMG_EXT)
