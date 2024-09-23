@@ -1,14 +1,14 @@
 import ripple_noise as rpn
 
 if __name__ == '__main__':
-    img_1 = rpn.Ripple_Noise('img_1', 500, 3)
-    img_1.save_image()
-    print('Image 1 generated.')
+    # Configure the noise with a Ripple_Noise object.
+    # Generate one or more images from a given configuration using the generate_image method.
+    noise_1 = rpn.Ripple_Noise(500, 3)
+    noise_1.generate_image('img_1')
+    noise_1.generate_image('img_2')
 
-    img_2 = rpn.Ripple_Noise('img_2', 500, 8, 0.2)
-    img_2.save_image()
-    print('Image 2 generated.')
+    noise_2 = rpn.Ripple_Noise(500, 15, 0.3)
+    noise_2.generate_image('img_3')
 
-    img_3 = rpn.Ripple_Noise('img_3', 500, 2, 0.03, 1)
-    img_3.save_image()
-    print('Image 3 generated.')
+    noise_3 = rpn.Ripple_Noise(1000, 2, 0.03, 1)
+    noise_3.generate_image('img_4')
