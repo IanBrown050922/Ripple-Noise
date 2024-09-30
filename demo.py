@@ -1,5 +1,6 @@
 import ripple_noise as rpn
 
+
 if __name__ == '__main__':
     # Configure the noise with a Ripple_Noise object.
     # Generate one or more images from a given configuration using the generate_image method.
