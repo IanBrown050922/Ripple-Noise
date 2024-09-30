@@ -1,34 +1,36 @@
-import random
-import math
 from PIL import Image
+import numpy as np
 
 
 '''
 Class for generating noise texture images
 '''
 class Ripple_Noise:
+    MAX_VALUE = 255
     IMG_EXT = '.png'
 
 
     '''
     Constructor
 
+    name: name of noise image
     size: size of image
     density: density of noise pattern
-    scale: scale of noise pattern
+    scale: scale of noise pattern, expressed as a range so different parts of the image can
+    have different scales randomly selected from this range
     strength: strength of noise pattern
     smoothness: smoothness of noise pattern
     '''
-    def __init__(self, size: int, density: int, scale=0.1, strength=0.75, smoothness=2) -> None:
+    def __init__(self, size: int, density: int, scale=(0.1, 0.1), strength=0.75, smoothness=2) -> None:
         self.__validate_parameters(size, density, smoothness)
 
         self.size = size
         self.density = density
-
         self.delta = self.size // self.density
-        self.scale = scale * self.delta
+        self.scales = np.random.uniform(self.delta * scale[0], self.delta * scale[1], (density, density))
         self.strength = strength * self.delta
         self.smoothness = smoothness
+
 
 
     '''
@@ -67,17 +69,21 @@ class Ripple_Noise:
 
             for j in range(self.density):
                 col = j * self.delta
-                seed = (random.randint(row, row + self.delta), random.randint(col, col + self.delta))
-                self.seeds[i].append(seed)
+
+                seed = (np.random.randint(row, row + self.delta), np.random.randint(col, col + self.delta))
+                scale = self.scales[i][j]
+                seed_info = (seed, scale) # pair seed with it's scaling information
+
+                self.seeds[i].append(seed_info)
 
 
     '''
     Determine lightness of pixel from distance to seed
     '''
-    def __value_function(self, dist: int) -> int:
-        value = 255 * math.cos(math.pi * dist / self.scale)
-        value *= math.exp(-((dist / self.strength) ** 2))
-        return math.floor(value)
+    def __value_function(self, dist: int, scale: np.float64) -> int:
+        value = Ripple_Noise.MAX_VALUE * np.cos(np.pi * dist / scale)
+        value *= np.exp(-((dist / self.strength) ** 2))
+        return int(np.floor(value))
     
 
     '''
@@ -106,9 +112,11 @@ class Ripple_Noise:
         value = 0 
         nearest_seeds = self.__nearest_seeds(x, y)
 
-        for seed in nearest_seeds:
-            dist = math.sqrt(((x - seed[0]) ** 2) + ((y - seed[1]) ** 2))
-            value += self.__value_function(dist)
+        for s in nearest_seeds:
+            seed = s[0]
+            scale = s[1]
+            dist = np.sqrt(((x - seed[0]) ** 2) + ((y - seed[1]) ** 2))
+            value += self.__value_function(dist, scale)
         
         value = min(value, 255)
         self.pixels[x, y] = (value, value, value)
